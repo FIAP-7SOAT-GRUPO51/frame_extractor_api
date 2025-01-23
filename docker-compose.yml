@@ -1,0 +1,57 @@
+services:
+
+  frame-extractor-db:
+    image: postgres:14
+    container_name: frame-extractor-db
+    environment:
+      POSTGRES_USER: ${FRAME_EXTRACTOR_API_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${FRAME_EXTRACTOR_API_POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    volumes:
+      - ${FRAME_EXTRACTOR_API_POSTGRES_VOLUME_DATA}:/var/lib/postgresql/data
+      - ./docker-compose/postgres:/docker-entrypoint-initdb.d
+    ports:
+      - "${FRAME_EXTRACTOR_API_POSTGRES_PORT}:5432"
+    networks:
+      - network-frame-extractor
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        
+  frame-extractor-api:
+    image: fiapgrupo51/frame-extractor-api:1.0.0
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: frame-extractor-api
+    environment:
+      APP_OPTIONS:
+        --spring.profiles.active=${FRAME_EXTRACTOR_API_SPRING_PROFILES_ACTIVE}
+        --spring.datasource.platform=${FRAME_EXTRACTOR_API_SPRING_DATASOURCE_PLATFORM}
+        --spring.datasource.url=${FRAME_EXTRACTOR_API_SPRING_DATASOURCE_URL}
+        --spring.datasource.username=${FRAME_EXTRACTOR_API_POSTGRES_USER}
+        --spring.datasource.password=${FRAME_EXTRACTOR_API_POSTGRES_PASSWORD}
+        --spring.datasource.driverClassName=${FRAME_EXTRACTOR_API_SPRING_DATASOURCE_DRIVER}
+        --spring.jpa.show-sql=${FRAME_EXTRACTOR_API_SPRING_JPA_SHOW_SQL}
+        --jwt.key.path=/app/keys
+        --jwt.key.name-private=${FRAME_EXTRACTOR_API_JWT_KEY_NAME_PRIVATE}
+        --jwt.key.name-public=${FRAME_EXTRACTOR_API_JWT_KEY_NAME_PUBLIC}
+    ports:
+      - "${FRAME_EXTRACTOR_API_PORT}:8087"
+    volumes:
+      - ${FRAME_EXTRACTOR_API_JWT_PATH}:/app/keys
+    depends_on:
+      - frame-extractor-db
+    networks:
+      - network-frame-extractor
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+
+  network-frame-extractor:
+    name: network-frame-extractor
+    driver: bridge

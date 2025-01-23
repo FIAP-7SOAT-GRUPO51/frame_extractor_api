@@ -1,0 +1,22 @@
+server:
+  port: 8087
+
+spring:
+  datasource:
+    platform: ${SPRING_DATASOURCE_PLATFORM}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driverClassName: ${SPRING_DATASOURCE_DRIVER}
+    hikari:
+      pool-name: frameextractordb
+      maximum-pool-size: 5
+      minimum-idle: 3
+      max-lifetime: 1800000
+      idle-timeout: 30000
+  jpa:
+    show-sql: false
+
+#logging.level.org.springframework=debug
+#logging.level.org.hibernate.SQL=debug
+#logging.level.org.hibernate.type.descriptor.sql=trace

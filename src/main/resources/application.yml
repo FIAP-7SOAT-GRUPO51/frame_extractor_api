@@ -1,0 +1,25 @@
+jwt:
+  key:
+    path: ${JWT_KEY_PATH}
+    name-private: ${JWT_KEY_NAME_PRIVATE}
+    name-public: ${JWT_KEY_NAME_PUBLIC}
+
+
+springdoc:
+  swagger-ui:
+    path: /docs
+
+spring:
+  profiles:
+    active:
+      - ${SPRING_PROFILES_ACTIVE_ENVIRONMENT}
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  flyway:
+    baseline-on-migrate: true
+    locations: "classpath:/db/migration/postgres,classpath:/db/migration/afterMigrate"
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true # Se receber atributo desconhecido o spring retornara um erro
