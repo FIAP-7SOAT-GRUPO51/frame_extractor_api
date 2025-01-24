@@ -143,6 +143,15 @@
 			<version>${h2.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+		<!-- AWS dependency -->
+		<!-- https://mvnrepository.com/artifact/software.amazon.awssdk/s3 -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.756</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
