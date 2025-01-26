@@ -1,5 +1,6 @@
 package fiap.grupo51.fase5.frame_extractor_api.api.controller;
 
+import fiap.grupo51.fase5.frame_extractor_api.api.openapi.BucketFileApi;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.BucketFileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/bucket")
-public class BucketFileController {
+public class BucketFileController implements BucketFileApi {
 
     private final BucketFileService bucketService;
 
@@ -20,8 +21,8 @@ public class BucketFileController {
         this.bucketService = bucketService;
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<byte[]> downloadFile(@RequestParam("fileName") String fileName) {
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<byte[]> downloadFile(@RequestParam("fileName") @PathVariable String fileName) {
         try {
             byte[] content = bucketService.downloadFile(fileName);
             return ResponseEntity.ok()
@@ -34,8 +35,8 @@ public class BucketFileController {
         }
     }
 
-    @GetMapping("/list")
-    public List<String> listFiles(@RequestParam(value = "filename", required = false) String filename) {
+    @GetMapping("/list/{fileName}")
+    public List<String> listFiles(@RequestParam(value = "filename", required = false) @PathVariable String filename) {
         return bucketService.listFiles(filename);
     }
 
@@ -50,8 +51,8 @@ public class BucketFileController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteFile(@RequestParam("fileName") String fileName) {
+    @DeleteMapping("/{fileName}")
+    public ResponseEntity<String> deleteFile(@RequestParam("fileName") @PathVariable String fileName) {
         try {
             bucketService.deleteFile(fileName);
             return ResponseEntity.ok("File deleted successfully: " + fileName);

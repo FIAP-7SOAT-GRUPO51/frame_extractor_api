@@ -9,15 +9,17 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class BucketFileService {
     private AmazonS3 s3Client;
 
-    @Value("${aws.s3.bucketName}")
+    @Value("${aws.s3BucketName}")
     private String bucketName;
 
     // Método setter para testes
@@ -26,7 +28,7 @@ public class BucketFileService {
     }
 
     public BucketFileService(@Value("${aws.accessKeyId}") String accessKeyId,
-                                   @Value("${aws.secretKey}") String secretKey,
+                                   @Value("${aws.secretAccessKey}") String secretKey,
                                    @Value("${aws.region}") String region) {
         BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKeyId, secretKey);
         this.s3Client = AmazonS3ClientBuilder.standard()
