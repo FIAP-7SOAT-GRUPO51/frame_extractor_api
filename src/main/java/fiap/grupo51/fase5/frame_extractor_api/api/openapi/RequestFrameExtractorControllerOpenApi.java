@@ -1,5 +1,6 @@
 package fiap.grupo51.fase5.frame_extractor_api.api.openapi;
 
+import fiap.grupo51.fase5.frame_extractor_api.api.model.PageableCustom;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.RequestFrameExtractorModel;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUpdate;
@@ -8,7 +9,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
@@ -17,7 +17,7 @@ public interface RequestFrameExtractorControllerOpenApi {
 
     @Operation(summary = "Lista solicitações com paginação")
     @PageableParameter
-    Page<RequestFrameExtractorModel> list(@Parameter(hidden = true) Pageable pageable);
+    PageableCustom<RequestFrameExtractorModel> list(@Parameter(hidden = true) Pageable pageable);
 
     @Operation(summary = "Encontra solicitação por Chave de Acesso")
     RequestFrameExtractorModel findByAccessKey(

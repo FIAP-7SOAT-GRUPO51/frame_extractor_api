@@ -11,6 +11,8 @@ import lombok.*;
 @Setter
 public class RequestFrameExtractorUpdate {
 
+    private String accessKey;
+
     @NotNull
     private String description;
 

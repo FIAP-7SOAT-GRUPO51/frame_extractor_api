@@ -19,7 +19,7 @@ spring:
         one-indexed-parameters: true
   flyway:
     baseline-on-migrate: true
-    locations: "classpath:/db/migration/postgres,classpath:/db/migration/afterMigrate"
+    locations: "classpath:/migration/postgres,classpath:/migration/afterMigrate"
   jackson:
     deserialization:
       fail-on-unknown-properties: true # Se receber atributo desconhecido o spring retornara um erro
