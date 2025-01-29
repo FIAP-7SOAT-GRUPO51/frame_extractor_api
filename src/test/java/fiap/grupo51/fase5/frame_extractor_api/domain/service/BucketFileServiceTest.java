@@ -27,7 +27,7 @@ public class BucketFileServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this); // Inicia os mocks
-        bucketFileService = new BucketFileService("accessKeyId", "secretKey", "region");
+        bucketFileService = new BucketFileService("accessKeyId", "secretKey", "us-east-1");
         bucketFileService.setS3Client(s3Client); // Injeta o mock do S3
     }
 
