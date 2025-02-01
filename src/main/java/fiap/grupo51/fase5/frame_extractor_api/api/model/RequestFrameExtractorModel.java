@@ -15,5 +15,6 @@ public class RequestFrameExtractorModel {
     private int fps;
     private String accessKey;
     private RequestFrameExtractorStatus status;
+    private String email;
 
 }

@@ -28,4 +28,6 @@ public class RequestFrameExtractor extends Audit {
 	@Enumerated(EnumType.STRING)
 	private RequestFrameExtractorStatus status;
 
+	private String email;
+
 }
