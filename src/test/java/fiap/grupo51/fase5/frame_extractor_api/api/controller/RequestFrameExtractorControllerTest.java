@@ -1,5 +1,6 @@
 package fiap.grupo51.fase5.frame_extractor_api.api.controller;
 
+import fiap.grupo51.fase5.frame_extractor_api.api.model.PageableCustom;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.RequestFrameExtractorModel;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUpdate;
@@ -66,11 +67,11 @@ class RequestFrameExtractorControllerTest {
         when(requestFrameExtractorService.findAll(pageable)).thenReturn(requestFrameExtractorModelPage);;
 
         // Act
-        Page<RequestFrameExtractorModel> result = requestFrameExtractorController.list(pageable);
+        PageableCustom<RequestFrameExtractorModel> result = requestFrameExtractorController.list(pageable);
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.getContent().size());
+        assertEquals(1, result.getItems().size());
         verify(requestFrameExtractorService).findAll(pageable);
     }
 

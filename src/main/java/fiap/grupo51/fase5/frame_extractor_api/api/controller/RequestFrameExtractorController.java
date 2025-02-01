@@ -15,8 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping(path = "/v1/request-frame-extractor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RequestFrameExtractorController implements RequestFrameExtractorControllerOpenApi {

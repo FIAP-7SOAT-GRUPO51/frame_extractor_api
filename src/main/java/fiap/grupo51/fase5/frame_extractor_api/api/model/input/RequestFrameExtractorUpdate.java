@@ -22,4 +22,7 @@ public class RequestFrameExtractorUpdate {
     @Positive
     private int fps;
 
+    @NotNull
+    private String email;
+
 }

@@ -20,4 +20,7 @@ public class RequestFrameExtractorInput {
     @Positive
     private int fps;
 
+    @NotNull
+    private String email;
+
 }

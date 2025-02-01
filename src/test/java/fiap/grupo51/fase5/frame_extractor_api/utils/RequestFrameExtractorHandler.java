@@ -12,6 +12,7 @@ public class RequestFrameExtractorHandler {
         return RequestFrameExtractor.builder()
                 .description("TST DESCRICAO")
                 .fileName("tst.mp4")
+                .email("teste@gmail.com")
                 .fps(1)
                 .build();
     }
@@ -20,6 +21,7 @@ public class RequestFrameExtractorHandler {
         return RequestFrameExtractorModel.builder()
                 .description("TST DESCRICAO")
                 .fileName("tst.mp4")
+                .email("teste@gmail.com")
                 .fps(1)
                 .accessKey("E4A8F533-DC7F-4766-B782-D731E14764FC")
                 .build();
@@ -29,6 +31,7 @@ public class RequestFrameExtractorHandler {
         return RequestFrameExtractorInput.builder()
                 .description("TST FULANO")
                 .fileName("tst.mp4")
+                .email("teste@gmail.com")
                 .fps(1)
                 .build();
     }
@@ -37,6 +40,7 @@ public class RequestFrameExtractorHandler {
         return RequestFrameExtractorUpdate.builder()
                 .description("TST FULANO UPDATE")
                 .fileName("tst.mp4")
+                .email("teste@gmail.com")
                 .fps(1)
                 .build();
     }

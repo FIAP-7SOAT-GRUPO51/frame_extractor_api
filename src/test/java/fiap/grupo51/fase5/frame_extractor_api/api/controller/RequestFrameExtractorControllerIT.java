@@ -67,7 +67,7 @@ class RequestFrameExtractorControllerIT {
             new UsernamePasswordAuthenticationToken(env.get("JWT_TOKEN_USERNAME"), env.get("JWT_TOKEN_PASSWORD"))
         );
         token = jwtService.generateToken(authentication);
-        RestAssured.basePath = "/v1/requestFrameExtractor";
+        RestAssured.basePath = "/v1/request-frame-extractor";
 
     }
 
@@ -82,8 +82,8 @@ class RequestFrameExtractorControllerIT {
             .get()
         .then()
             .statusCode(HttpStatus.OK.value())
-            .body("content", notNullValue())
-            .body("content.size()", greaterThanOrEqualTo(0));
+            .body("items", notNullValue())
+            .body("items.size()", greaterThanOrEqualTo(0));
     }
 
     @Test
@@ -106,6 +106,7 @@ class RequestFrameExtractorControllerIT {
         {            
             "description": "Post Teste",
             "fileName": "test.mp4",
+            "email": "test@gmail.com",
             "fps": 1
         }
         """;
