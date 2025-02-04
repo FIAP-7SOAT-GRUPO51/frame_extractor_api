@@ -35,7 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         "spring.flyway.locations=classpath:db/migration/h2",
         "jwt.key.path=classpath",
         "jwt.key.name-private=app.key",
-        "jwt.key.name-public=app.pub"
+        "jwt.key.name-public=app.pub",
+        "aws.accessKeyId=accessKeyId",
+        "aws.region=us-east-1",
+        "aws.s3BucketName=bucket-id",
+        "aws.secretAccessKey=secretAccessKey"
     })
 @TestPropertySource("/application-development.yml")
 class RequestFrameExtractorControllerIT {

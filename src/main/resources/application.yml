@@ -4,6 +4,11 @@ jwt:
     name-private: ${JWT_KEY_NAME_PRIVATE}
     name-public: ${JWT_KEY_NAME_PUBLIC}
 
+aws:
+  accessKeyId: ${AWS_ACCESS_KEY_ID}
+  region: ${AWS_REGION}
+  s3BucketName: ${AWS_S3_BUCKET_NAME}
+  secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
 
 springdoc:
   swagger-ui:

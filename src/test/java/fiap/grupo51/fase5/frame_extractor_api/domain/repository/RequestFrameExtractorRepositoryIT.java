@@ -26,6 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
             "jwt.key.path=classpath",
             "jwt.key.name-private=app.key",
             "jwt.key.name-public=app.pub",
+            "aws.accessKeyId=accessKeyId",
+            "aws.region=us-east-1",
+            "aws.s3BucketName=bucket-id",
+            "aws.secretAccessKey=secretAccessKey"
     })
 @TestPropertySource("/application-development.yml")
 class RequestFrameExtractorRepositoryIT {

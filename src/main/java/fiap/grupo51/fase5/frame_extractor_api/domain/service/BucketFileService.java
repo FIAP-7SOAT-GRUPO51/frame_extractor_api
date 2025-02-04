@@ -5,15 +5,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractor;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractorStatus;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.User;
-import fiap.grupo51.fase5.frame_extractor_api.domain.repository.BucketFileRepository;
+import fiap.grupo51.fase5.frame_extractor_api.domain.repository.RequestFrameExtractorRepository;
 import fiap.grupo51.fase5.frame_extractor_api.domain.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -23,38 +22,45 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class BucketFileService {
-    private final BucketFileRepository bucketFileRepository;
-    private final AmazonS3 s3Client;
+    private final RequestFrameExtractorRepository requestFrameExtractorRepository;
+    private AmazonS3 s3Client;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Value("${aws.s3BucketName}")
     private String bucketName;
 
+    @Value("${aws.accessKeyId}")
+    private String accessKeyId;
 
-    @Autowired
-    public BucketFileService(BucketFileRepository bucketFileRepository,
-                             @Value("${aws.accessKeyId}") String accessKeyId,
-                             @Value("${aws.secretAccessKey}") String secretKey,
-                             @Value("${aws.region}") String region) {
-        this.bucketFileRepository = bucketFileRepository;
-        BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKeyId, secretKey);
-        this.s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(Regions.fromName(region))
-                .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
-                .build();
+    @Value("${aws.secretAccessKey}")
+    private String secretKey;
+
+    @Value("${aws.region}")
+    private String region;
+
+    public BucketFileService(RequestFrameExtractorRepository requestFrameExtractorRepository, UserRepository userRepository) {
+        this.requestFrameExtractorRepository = requestFrameExtractorRepository;
+        this.userRepository = userRepository;
+
+        try {
+            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKeyId, secretKey);
+            this.s3Client = AmazonS3ClientBuilder.standard()
+                    .withRegion(Regions.fromName(region))
+                    .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
+                    .build();
+        } catch (Exception e) {
+            this.s3Client = null;
+            log.error("Erro ao carregar a classe AmazonS3ClientBuilder",e);
+        }
+
     }
 
     public String uploadFile(MultipartFile file, String description, int fps) throws IOException {
@@ -72,7 +78,7 @@ public class BucketFileService {
         fileEntity.setUserInsert(currentUser); // Define o usuário que está realizando a inserção
 
         // Salva temporariamente para que o @PrePersist gere o accessKey
-        fileEntity = bucketFileRepository.save(fileEntity);
+        fileEntity = requestFrameExtractorRepository.save(fileEntity);
 
         // Agora que a entidade foi persistida, pegamos o accessKey gerado
         String accessKey = fileEntity.getAccessKey();
@@ -88,14 +94,14 @@ public class BucketFileService {
 
         // Atualiza o nome do arquivo na entidade
         fileEntity.setFileName(uniqueFileName);
-        bucketFileRepository.save(fileEntity); // Atualiza no banco
+        requestFrameExtractorRepository.save(fileEntity); // Atualiza no banco
 
         return "Arquivo enviado com sucesso: " + uniqueFileName;
     }
 
 
     public byte[] downloadFile(String fileName) throws IOException {
-        RequestFrameExtractor fileEntity = bucketFileRepository.findByFileName(fileName)
+        RequestFrameExtractor fileEntity = requestFrameExtractorRepository.findByFileName(fileName)
                 .orElseThrow(() -> new RuntimeException("Arquivo não encontrado no banco"));
 
         S3Object s3Object = s3Client.getObject(bucketName, fileEntity.getFileName());
@@ -103,19 +109,19 @@ public class BucketFileService {
     }
 
     public List<String> listFiles(String filename) {
-        return bucketFileRepository.findByFileNameContaining(filename);
+        return requestFrameExtractorRepository.findByFileNameContaining(filename);
     }
 
 
     public void deleteFile(String fileName) {
-        RequestFrameExtractor fileEntity = bucketFileRepository.findByFileName(fileName)
+        RequestFrameExtractor fileEntity = requestFrameExtractorRepository.findByFileName(fileName)
                 .orElseThrow(() -> new RuntimeException("Arquivo não encontrado no banco"));
 
         // Deleta do S3
         s3Client.deleteObject(bucketName, fileEntity.getFileName());
 
         // Deleta do banco
-        bucketFileRepository.delete(fileEntity);
+        requestFrameExtractorRepository.delete(fileEntity);
     }
 
     public User getCurrentUser() {
