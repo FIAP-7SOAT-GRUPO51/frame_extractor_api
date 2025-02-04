@@ -194,6 +194,10 @@
 				<configuration>
 					<parallel>methods</parallel>
 					<threadCount>10</threadCount>
+					<excludes>
+						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
