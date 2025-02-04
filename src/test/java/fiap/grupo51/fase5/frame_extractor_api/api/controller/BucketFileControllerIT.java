@@ -45,11 +45,17 @@ public class BucketFileControllerIT {
     void integrationTestUploadFile() throws Exception {
         MockMultipartFile mockFile = new MockMultipartFile("file", "test.txt", "text/plain", "Integration Content".getBytes());
 
-        Mockito.when(bucketService.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("File uploaded successfully");
+        Mockito.when(bucketService.uploadFile(Mockito.any(MultipartFile.class), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn("Arquivo enviado com sucesso: test.txt");
 
         mockMvc.perform(multipart("/uploadFile")
-                        .file(mockFile))
+                        .file(mockFile)
+                        .param("description", "Test file description")
+                        .param("fps", "30"))
                 .andExpect(status().isOk())
-                .andExpect(content().string("File uploaded successfully"));
+                .andExpect(content().string("Arquivo enviado com sucesso: test.txt"));
+
+        Mockito.verify(bucketService).uploadFile(Mockito.any(MultipartFile.class), Mockito.anyString(), Mockito.anyInt());
     }
+
 }

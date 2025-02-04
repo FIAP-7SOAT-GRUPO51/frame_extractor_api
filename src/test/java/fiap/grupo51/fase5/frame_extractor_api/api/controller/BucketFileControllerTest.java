@@ -22,11 +22,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @WebMvcTest(BucketFileController.class)
 public class BucketFileControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
     @Mock
-    private BucketFileService bucketService;
+    private BucketFileService bucketService; // Use @MockBean para injetar um mock no contexto Spring
 
     @Test
     void testDownloadFile() throws Exception {
@@ -44,7 +45,6 @@ public class BucketFileControllerTest {
                 .andExpect(content().bytes(fileContent)); // Verifica o conteúdo da resposta como bytes
     }
 
-
     @Test
     void testListFiles() throws Exception {
         List<String> fileList = List.of("file1.txt", "file2.txt");
@@ -58,14 +58,24 @@ public class BucketFileControllerTest {
 
     @Test
     void testUploadFile() throws Exception {
+        // Prepara o arquivo mockado
         MockMultipartFile mockFile = new MockMultipartFile("file", "test.txt", "text/plain", "Hello".getBytes());
 
-        when(bucketService.uploadFile(Mockito.any(MultipartFile.class))).thenReturn("File uploaded successfully");
+        // Defina os parâmetros adicionais que agora são exigidos
+        String description = "Test file upload";
+        int fps = 30;
 
+        // Configura o comportamento esperado do bucketService
+        when(bucketService.uploadFile(Mockito.any(MultipartFile.class), Mockito.anyString(), Mockito.anyInt()))
+                .thenReturn("Arquivo enviado com sucesso: test.txt");
+
+        // Executa a requisição e verifica as respostas
         mockMvc.perform(multipart("/uploadFile")
-                        .file(mockFile))
+                        .file(mockFile)
+                        .param("description", description)  // Adiciona o parâmetro de descrição
+                        .param("fps", String.valueOf(fps)))  // Adiciona o parâmetro FPS
                 .andExpect(status().isOk())
-                .andExpect(content().string("File uploaded successfully"));
+                .andExpect(content().string("Arquivo enviado com sucesso: test.txt"));
     }
 
     @Test
@@ -75,9 +85,9 @@ public class BucketFileControllerTest {
         // Mockando o comportamento do serviço
         Mockito.doNothing().when(bucketService).deleteFile(fileName);
 
-        mockMvc.perform(delete("/")
-                        .param("fileName", fileName))
+        mockMvc.perform(delete("/deleteFile")
+                        .param("fileName", fileName)) // Ajuste o endpoint para corresponder ao controlador
                 .andExpect(status().isOk())
-                .andExpect(content().string("File deleted successfully: " + fileName));
+                .andExpect(content().string("Arquivo deletado com sucesso: " + fileName));
     }
 }

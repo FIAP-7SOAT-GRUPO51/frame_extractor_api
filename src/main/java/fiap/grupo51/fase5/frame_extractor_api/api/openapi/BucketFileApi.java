@@ -26,7 +26,13 @@ public interface BucketFileApi {
     @Operation(summary = "Realizar o upload de um arquivo")
     ResponseEntity<String> uploadFile(
             @Parameter(description = "Arquivo para upload", required = true)
-            @RequestParam("file") MultipartFile file);
+            @RequestParam("file") MultipartFile file,
+
+            @Parameter(description = "Descrição do arquivo", required = true)
+            @RequestParam("description") String description,
+
+            @Parameter(description = "Frames por segundo (FPS) do vídeo", required = true)
+            @RequestParam("fps") int fps);
 
     @Operation(summary = "Realizar exclusão de um arquivo")
     ResponseEntity<String> deleteFile(
