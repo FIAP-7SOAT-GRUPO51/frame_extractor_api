@@ -36,6 +36,9 @@
 		<google.guava.version>33.2.1-jre</google.guava.version>
 		<lombok.version>1.18.36</lombok.version>
 		<h2.version>2.2.224</h2.version>
+		<!-- Configurações para o Sonar e cobertura de código -->
+		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+
 	</properties>
 	<dependencies>
 		<dependency>
@@ -260,12 +263,20 @@
 								</rule>
 							</rules>
 							<excludes>
-								<!--<exclude>fiap/grupo51/fase5/frame_extractor_api/api/controller/RequestFrameExtractorControllerIT*</exclude>-->
+								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Plugin para o SonarQube -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.9.1.2184</version>
+			</plugin>
+
 		</plugins>
 	</build>
 
