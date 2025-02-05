@@ -263,7 +263,8 @@
 								</rule>
 							</rules>
 							<excludes>
-								<!--<exclude>fiap/grupo51/fase5/frame_extractor_api/api/controller/RequestFrameExtractorControllerIT*</exclude>-->
+								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
