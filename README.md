@@ -28,3 +28,21 @@ Também é possível rodar toda a aplicação usando banco de dados postgres con
 ```sh
 docker-compose up -d
 ```
+
+## Gerando par de chaves para geração de Tokens
+
+Utilizar o openssl
+
+```
+ openssl genrsa -out app_key.pem 2048
+```
+
+```
+ openssl rsa -in app_key.pem -pubout -out app_pub.crt
+```
+
+
+```
+ mv app_key.pem app.key
+ mv app_pub.crt app.pub
+```
