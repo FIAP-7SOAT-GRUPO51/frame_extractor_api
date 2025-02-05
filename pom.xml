@@ -36,9 +36,12 @@
 		<google.guava.version>33.2.1-jre</google.guava.version>
 		<lombok.version>1.18.36</lombok.version>
 		<h2.version>2.2.224</h2.version>
-		<!-- Configurações para o Sonar e cobertura de código -->
-		<sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-
+		<!-- Configurações para o Sonar e JaCoCo e cobertura de código -->
+		<jacoco.version>0.8.8</jacoco.version>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.language>java</sonar.language>
 
 	</properties>
 	<dependencies>
@@ -179,6 +182,11 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.jacoco</groupId>
+			<artifactId>jacoco-maven-plugin</artifactId>
+			<version>${jacoco.version}</version>
+		</dependency>
 
 	</dependencies>
 
@@ -228,25 +236,26 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!--<plugin>
+			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.8</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
+						<id>jacoco-initialize</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>report</id>
-						<phase>test</phase>
+						<id>jacoco-site</id>
+						<phase>package</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
 					</execution>
 					<execution>
-						<id>check</id>
+						<id>jacoco-check</id>
 						<goals>
 							<goal>check</goal>
 						</goals>
@@ -256,57 +265,23 @@
 									<element>BUNDLE</element>
 									<limits>
 										<limit>
-											<counter>INSTRUCTION</counter>
+											<counter>LINE</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.80</minimum>
+											<minimum>0.20</minimum>
 										</limit>
 									</limits>
 								</rule>
 							</rules>
-							<excludes>
-								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
-								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
-							</excludes>
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>-->
-
-
+			</plugin>
 			<!-- Plugin para o SonarQube -->
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.9.1.2184</version>
 			</plugin>
-
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.8</version>
-				<executions>
-					<execution>
-						<id>prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>verify</phase> <!-- Gera o relatório no final do ciclo de teste -->
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<reports>
-								<xml>true</xml> <!-- Gera o relatório XML necessário -->
-								<html>false</html> <!-- Pode desativar o HTML, se desejar -->
-							</reports>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 
