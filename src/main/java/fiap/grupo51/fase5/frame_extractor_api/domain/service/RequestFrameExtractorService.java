@@ -114,4 +114,11 @@ public class RequestFrameExtractorService {
         }
     }
 
+    public RequestFrameExtractorModel updateStatus(String accessKey, RequestFrameExtractorStatus requestFrameExtractorStatus, Authentication authentication) {
+        RequestFrameExtractor requestFrameExtractor = findByAccessKey(accessKey);
+        requestFrameExtractor.setStatus(requestFrameExtractorStatus);
+        User user = frameExtractorUserUtils.getUser(authentication);
+        requestFrameExtractor.setUserUpdate(user);
+        return upsert(requestFrameExtractor);
+    }
 }

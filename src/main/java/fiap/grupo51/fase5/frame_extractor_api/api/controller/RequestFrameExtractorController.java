@@ -5,6 +5,7 @@ import fiap.grupo51.fase5.frame_extractor_api.api.model.RequestFrameExtractorMod
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUpdate;
 import fiap.grupo51.fase5.frame_extractor_api.api.openapi.RequestFrameExtractorControllerOpenApi;
+import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractorStatus;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.RequestFrameExtractorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -54,6 +55,38 @@ public class RequestFrameExtractorController implements RequestFrameExtractorCon
         @RequestBody @Valid RequestFrameExtractorUpdate requestFrameExtractorUpdate,
         Authentication authentication) {
         return requestFrameExtractorService.update(accessKey, requestFrameExtractorUpdate, authentication);
+    }
+
+    @PutMapping("/{accessKey}/status-open")
+    @Override
+    public RequestFrameExtractorModel setStatusOpen(
+            @PathVariable String accessKey,
+            Authentication authentication) {
+        return requestFrameExtractorService.updateStatus(accessKey, RequestFrameExtractorStatus.EM_ABERTO, authentication);
+    }
+
+    @PutMapping("/{accessKey}/status-in-progress")
+    @Override
+    public RequestFrameExtractorModel setStatusInProgress(
+            @PathVariable String accessKey,
+            Authentication authentication) {
+        return requestFrameExtractorService.updateStatus(accessKey, RequestFrameExtractorStatus.EM_PROCESSAMENTO, authentication);
+    }
+
+    @PutMapping("/{accessKey}/status-done")
+    @Override
+    public RequestFrameExtractorModel setStatusDone(
+            @PathVariable String accessKey,
+            Authentication authentication) {
+        return requestFrameExtractorService.updateStatus(accessKey, RequestFrameExtractorStatus.CONCLUIDO, authentication);
+    }
+
+    @PutMapping("/{accessKey}/status-fail")
+    @Override
+    public RequestFrameExtractorModel setStatusFail(
+            @PathVariable String accessKey,
+            Authentication authentication) {
+        return requestFrameExtractorService.updateStatus(accessKey, RequestFrameExtractorStatus.FALHA, authentication);
     }
 
     @DeleteMapping("/{accessKey}")
