@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.RequestFrameExtractorModel;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
+import fiap.grupo51.fase5.frame_extractor_api.domain.components.AWSProperties;
 import fiap.grupo51.fase5.frame_extractor_api.domain.exception.DomainException;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractor;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.User;
@@ -33,31 +34,30 @@ import java.util.List;
 public class BucketFileService {
     private final RequestFrameExtractorRepository requestFrameExtractorRepository;
     private final RequestFrameExtractorService requestFrameExtractorService;
+    private final AWSProperties awsProperties;
     private AmazonS3 s3Client;
 
     private final UserRepository userRepository;
 
-    @Value("${aws.s3BucketName}")
-    private String bucketName;
 
-    @Value("${aws.accessKeyId}")
-    private String accessKeyId;
-
-    @Value("${aws.secretAccessKey}")
-    private String secretKey;
-
-    @Value("${aws.region}")
-    private String region;
-
-    public BucketFileService(RequestFrameExtractorRepository requestFrameExtractorRepository, RequestFrameExtractorService requestFrameExtractorService, UserRepository userRepository) {
+    public BucketFileService(
+            RequestFrameExtractorRepository requestFrameExtractorRepository,
+            RequestFrameExtractorService requestFrameExtractorService, AWSProperties awsProperties,
+            UserRepository userRepository) {
         this.requestFrameExtractorRepository = requestFrameExtractorRepository;
         this.requestFrameExtractorService = requestFrameExtractorService;
+        this.awsProperties = awsProperties;
         this.userRepository = userRepository;
 
+        log.info("bucketName" + this.awsProperties.getS3BucketName());
+        log.info("accessKeyId" + this.awsProperties.getAccessKeyId());
+        log.info("secretAccessKey" + this.awsProperties.getSecretAccessKey());
+        log.info("region" + this.awsProperties.getRegion());
+
         try {
-            BasicAWSCredentials awsCreds = new BasicAWSCredentials(accessKeyId, secretKey);
+            BasicAWSCredentials awsCreds = new BasicAWSCredentials(this.awsProperties.getAccessKeyId(), this.awsProperties.getSecretAccessKey());
             this.s3Client = AmazonS3ClientBuilder.standard()
-                    .withRegion(Regions.fromName(region))
+                    .withRegion(Regions.fromName(this.awsProperties.getRegion()))
                     .withCredentials(new AWSStaticCredentialsProvider(awsCreds))
                     .build();
         } catch (Exception e) {
@@ -82,7 +82,7 @@ public class BucketFileService {
             throw new DomainException("Erro ao enviar arquivo para o S3. Client não instanciado.");
         }
 
-        s3Client.putObject(bucketName, uniqueFileName, file.getInputStream(), metadata);
+        s3Client.putObject(this.awsProperties.getS3BucketName(), uniqueFileName, file.getInputStream(), metadata);
 
         return "Arquivo enviado com sucesso: " + uniqueFileName;
     }
@@ -92,7 +92,7 @@ public class BucketFileService {
         RequestFrameExtractor fileEntity = requestFrameExtractorRepository.findByFileName(fileName)
                 .orElseThrow(() -> new DomainException("Arquivo [" + fileName + "] não encontrado no banco"));
 
-        S3Object s3Object = s3Client.getObject(bucketName, fileEntity.getFileName());
+        S3Object s3Object = s3Client.getObject(this.awsProperties.getS3BucketName(), fileEntity.getFileName());
         return s3Object.getObjectContent().readAllBytes();
     }
 
@@ -106,12 +106,12 @@ public class BucketFileService {
                 .orElseThrow(() -> new DomainException("Arquivo [" + fileName + "]não encontrado no banco"));
 
         // Deleta do S3
-        s3Client.deleteObject(bucketName, fileEntity.getFileName());
+        s3Client.deleteObject(this.awsProperties.getS3BucketName(), fileEntity.getFileName());
 
         // Deleta do banco
         requestFrameExtractorRepository.delete(fileEntity);
     }
-git statu
+
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken) {

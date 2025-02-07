@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import fiap.grupo51.fase5.frame_extractor_api.api.openapi.BucketFileApi;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.BucketFileService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -65,7 +64,8 @@ public class BucketFileController implements BucketFileApi {
             String responseMessage = bucketService.uploadFile(file, requestFrameExtractorInput, authentication);
 
             // Retorna uma resposta de sucesso
-            return ResponseEntity.ok(responseMessage);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseMessage);
         } catch (IOException e) {
             // Em caso de erro, retorna uma resposta com erro interno
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
