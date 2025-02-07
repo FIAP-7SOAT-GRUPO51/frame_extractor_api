@@ -26,7 +26,7 @@ public interface RequestFrameExtractorControllerOpenApi {
 
     @Operation(summary = "Inclui solicitações")
     RequestFrameExtractorModel add(
-            @RequestBody(description = "Informações para inclusão de solicitações", required = true)
+            @Parameter(description = "Informações para inclusão de solicitações", required = true)
             RequestFrameExtractorInput requestFrameExtractorInput,
             @Parameter(hidden = true)
             Authentication authentication);

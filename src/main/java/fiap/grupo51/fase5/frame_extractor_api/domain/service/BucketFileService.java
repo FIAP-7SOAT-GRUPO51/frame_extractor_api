@@ -7,13 +7,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.RequestFrameExtractorModel;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
+import fiap.grupo51.fase5.frame_extractor_api.domain.exception.DomainException;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractor;
-import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractorStatus;
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.User;
 import fiap.grupo51.fase5.frame_extractor_api.domain.repository.RequestFrameExtractorRepository;
 import fiap.grupo51.fase5.frame_extractor_api.domain.repository.UserRepository;
+import fiap.grupo51.fase5.frame_extractor_api.utils.FrameExtractorUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,6 +32,7 @@ import java.util.List;
 @Service
 public class BucketFileService {
     private final RequestFrameExtractorRepository requestFrameExtractorRepository;
+    private final RequestFrameExtractorService requestFrameExtractorService;
     private AmazonS3 s3Client;
 
     private final UserRepository userRepository;
@@ -46,8 +49,9 @@ public class BucketFileService {
     @Value("${aws.region}")
     private String region;
 
-    public BucketFileService(RequestFrameExtractorRepository requestFrameExtractorRepository, UserRepository userRepository) {
+    public BucketFileService(RequestFrameExtractorRepository requestFrameExtractorRepository, RequestFrameExtractorService requestFrameExtractorService, UserRepository userRepository) {
         this.requestFrameExtractorRepository = requestFrameExtractorRepository;
+        this.requestFrameExtractorService = requestFrameExtractorService;
         this.userRepository = userRepository;
 
         try {
@@ -63,38 +67,22 @@ public class BucketFileService {
 
     }
 
-    public String uploadFile(MultipartFile file, String description, int fps) throws IOException {
-        // Recupera o usuário atual do contexto de segurança
-        User currentUser = getCurrentUser();  // Obtém o usuário logado através do contexto de segurança
+    public String uploadFile(MultipartFile file, RequestFrameExtractorInput requestFrameExtractorInput, Authentication authentication) throws IOException {
 
-        // Criamos a entidade para garantir que o accessKey seja gerado
-        RequestFrameExtractor fileEntity = RequestFrameExtractor.builder()
-                .fileName("") // Inicialmente vazio, será atualizado depois
-                .description(description)
-                .fps(fps)
-                .status(RequestFrameExtractorStatus.EM_PROCESSAMENTO)
-                .build();
+        RequestFrameExtractorModel requestFrameExtractorModel = requestFrameExtractorService.save(requestFrameExtractorInput, authentication);
+        String accessKey = requestFrameExtractorModel.getAccessKey();
 
-        fileEntity.setUserInsert(currentUser); // Define o usuário que está realizando a inserção
-
-        // Salva temporariamente para que o @PrePersist gere o accessKey
-        fileEntity = requestFrameExtractorRepository.save(fileEntity);
-
-        // Agora que a entidade foi persistida, pegamos o accessKey gerado
-        String accessKey = fileEntity.getAccessKey();
-
-        // Gera o nome único do arquivo com base no accessKey e nome original
-        String originalFileName = file.getOriginalFilename();
-        String uniqueFileName = accessKey + "_" + originalFileName;
+        String uniqueFileName = FrameExtractorUtils.generateNameToBucketFromRequestFrameExtractor(file.getOriginalFilename(), accessKey);
 
         // Faz o upload para o S3
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
-        s3Client.putObject(bucketName, uniqueFileName, file.getInputStream(), metadata);
 
-        // Atualiza o nome do arquivo na entidade
-        fileEntity.setFileName(uniqueFileName);
-        requestFrameExtractorRepository.save(fileEntity); // Atualiza no banco
+        if (s3Client == null) {
+            throw new DomainException("Erro ao enviar arquivo para o S3. Client não instanciado.");
+        }
+
+        s3Client.putObject(bucketName, uniqueFileName, file.getInputStream(), metadata);
 
         return "Arquivo enviado com sucesso: " + uniqueFileName;
     }
@@ -102,7 +90,7 @@ public class BucketFileService {
 
     public byte[] downloadFile(String fileName) throws IOException {
         RequestFrameExtractor fileEntity = requestFrameExtractorRepository.findByFileName(fileName)
-                .orElseThrow(() -> new RuntimeException("Arquivo não encontrado no banco"));
+                .orElseThrow(() -> new DomainException("Arquivo [" + fileName + "] não encontrado no banco"));
 
         S3Object s3Object = s3Client.getObject(bucketName, fileEntity.getFileName());
         return s3Object.getObjectContent().readAllBytes();
@@ -115,7 +103,7 @@ public class BucketFileService {
 
     public void deleteFile(String fileName) {
         RequestFrameExtractor fileEntity = requestFrameExtractorRepository.findByFileName(fileName)
-                .orElseThrow(() -> new RuntimeException("Arquivo não encontrado no banco"));
+                .orElseThrow(() -> new DomainException("Arquivo [" + fileName + "]não encontrado no banco"));
 
         // Deleta do S3
         s3Client.deleteObject(bucketName, fileEntity.getFileName());
@@ -123,7 +111,7 @@ public class BucketFileService {
         // Deleta do banco
         requestFrameExtractorRepository.delete(fileEntity);
     }
-
+git statu
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof JwtAuthenticationToken) {

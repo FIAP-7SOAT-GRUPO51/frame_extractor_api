@@ -28,3 +28,7 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true # Se receber atributo desconhecido o spring retornara um erro
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB

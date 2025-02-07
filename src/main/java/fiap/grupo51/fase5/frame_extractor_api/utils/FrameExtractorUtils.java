@@ -8,4 +8,8 @@ public class FrameExtractorUtils {
         return UUID.randomUUID().toString().toUpperCase();
     }
 
+    public static String generateNameToBucketFromRequestFrameExtractor(String originalFileName, String accessKey) {
+        return accessKey + "_" + originalFileName;
+    }
+
 }

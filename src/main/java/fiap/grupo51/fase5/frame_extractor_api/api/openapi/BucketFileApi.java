@@ -1,10 +1,12 @@
 package fiap.grupo51.fase5.frame_extractor_api.api.openapi;
 
 import fiap.grupo51.fase5.frame_extractor_api.api.model.BucketModel;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,13 +28,15 @@ public interface BucketFileApi {
     @Operation(summary = "Realizar o upload de um arquivo")
     ResponseEntity<String> uploadFile(
             @Parameter(description = "Arquivo para upload", required = true)
-            @RequestParam("file") MultipartFile file,
+            MultipartFile file,
 
-            @Parameter(description = "Descrição do arquivo", required = true)
-            @RequestParam("description") String description,
+            @Parameter(description = "Informações para inclusão de solicitações", required = true)
+            String data,
 
-            @Parameter(description = "Frames por segundo (FPS) do vídeo", required = true)
-            @RequestParam("fps") int fps);
+            @Parameter(hidden = true)
+            Authentication authentication
+
+    );
 
     @Operation(summary = "Realizar exclusão de um arquivo")
     ResponseEntity<String> deleteFile(

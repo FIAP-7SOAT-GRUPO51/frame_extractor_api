@@ -1,13 +1,19 @@
 package fiap.grupo51.fase5.frame_extractor_api.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
 import fiap.grupo51.fase5.frame_extractor_api.api.openapi.BucketFileApi;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.BucketFileService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -43,11 +49,20 @@ public class BucketFileController implements BucketFileApi {
 
     @PostMapping("/uploadFile")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("description") String description,
-                                             @RequestParam("fps") int fps) {
+                                             @RequestParam("data") String jsonParameter,
+                                             Authentication authentication) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        RequestFrameExtractorInput requestFrameExtractorInput = null;
+        try {
+            requestFrameExtractorInput = objectMapper.readValue(jsonParameter, RequestFrameExtractorInput.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
         try {
             // Chama o serviço passando os parâmetros necessários
-            String responseMessage = bucketService.uploadFile(file, description, fps);
+            String responseMessage = bucketService.uploadFile(file, requestFrameExtractorInput, authentication);
 
             // Retorna uma resposta de sucesso
             return ResponseEntity.ok(responseMessage);
