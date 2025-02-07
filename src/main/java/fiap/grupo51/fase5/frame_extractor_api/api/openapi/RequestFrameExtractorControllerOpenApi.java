@@ -40,6 +40,34 @@ public interface RequestFrameExtractorControllerOpenApi {
             @Parameter(hidden = true)
             Authentication authentication);
 
+    @Operation(summary = "Atualiza status para [Em Aberto]")
+    RequestFrameExtractorModel setStatusOpen(
+            @Parameter(description = "Chave de acesso da solicitação", required = true)
+            String accessKey,
+            @Parameter(hidden = true)
+            Authentication authentication);
+
+    @Operation(summary = "Atualiza status para [Em Processamento]")
+    RequestFrameExtractorModel setStatusInProgress(
+            @Parameter(description = "Chave de acesso da solicitação", required = true)
+            String accessKey,
+            @Parameter(hidden = true)
+            Authentication authentication);
+
+    @Operation(summary = "Atualiza status para [Concluído]")
+    RequestFrameExtractorModel setStatusDone(
+            @Parameter(description = "Chave de acesso da solicitação", required = true)
+            String accessKey,
+            @Parameter(hidden = true)
+            Authentication authentication);
+
+    @Operation(summary = "Atualiza status para [Falha]")
+    RequestFrameExtractorModel setStatusFail(
+            @Parameter(description = "Chave de acesso da solicitação", required = true)
+            String accessKey,
+            @Parameter(hidden = true)
+            Authentication authentication);
+
     @Operation(summary = "Exclui solicitação")
     void delete(
             @Parameter(description = "Chave de acesso da solicitação", required = true)
