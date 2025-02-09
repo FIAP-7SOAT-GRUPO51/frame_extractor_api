@@ -9,7 +9,11 @@ public class FrameExtractorUtils {
     }
 
     public static String generateNameToBucketFromRequestFrameExtractor(String originalFileName, String accessKey) {
-        return accessKey + "_" + originalFileName;
+        return accessKey + "___" + originalFileName;
+    }
+
+    public static String getAccessKeyFromNameFile(String fileName) {
+        return fileName.split("___")[0];
     }
 
 }

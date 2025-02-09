@@ -12,6 +12,7 @@ import fiap.grupo51.fase5.frame_extractor_api.domain.model.RequestFrameExtractor
 import fiap.grupo51.fase5.frame_extractor_api.domain.model.User;
 import fiap.grupo51.fase5.frame_extractor_api.domain.repository.RequestFrameExtractorRepository;
 import fiap.grupo51.fase5.frame_extractor_api.utils.FrameExtractorUserUtils;
+import fiap.grupo51.fase5.frame_extractor_api.utils.FrameExtractorUtils;
 import fiap.grupo51.fase5.frame_extractor_api.utils.MessageProperty;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,7 +32,7 @@ public class RequestFrameExtractorService {
     private final RequestFrameExtractorAssembler requestFrameExtractorAssembler;
     private final RequestFrameExtractorDisassembler requestFrameExtractorDisassembler;
     private final FrameExtractorUserUtils frameExtractorUserUtils;
-
+    private final BucketFileService bucketService;
 
     @MessageProperty("request.frame.extractor.not-found")
     private String requestFrameExtractorNotFound;
@@ -43,13 +44,13 @@ public class RequestFrameExtractorService {
             RequestFrameExtractorRepository requestFrameExtractorRepository,
             RequestFrameExtractorAssembler requestFrameExtractorAssembler,
             RequestFrameExtractorDisassembler requestFrameExtractorDisassembler,
-            FrameExtractorUserUtils frameExtractorUserUtils) {
+            FrameExtractorUserUtils frameExtractorUserUtils, BucketFileService bucketService) {
 
         this.requestFrameExtractorRepository = requestFrameExtractorRepository;
         this.requestFrameExtractorAssembler = requestFrameExtractorAssembler;
         this.requestFrameExtractorDisassembler = requestFrameExtractorDisassembler;
         this.frameExtractorUserUtils = frameExtractorUserUtils;
-
+        this.bucketService = bucketService;
     }
 
     public Page<RequestFrameExtractorModel> findAll(Pageable pageable) {
@@ -81,7 +82,8 @@ public class RequestFrameExtractorService {
 
     public void delete(String accessKey) {
         RequestFrameExtractor requestFrameExtractor = findByAccessKey(accessKey);
-        delete(requestFrameExtractor.getId());
+        String fileNameS3Bucket = FrameExtractorUtils.generateNameToBucketFromRequestFrameExtractor(requestFrameExtractor.getFileName(), accessKey);
+        delete(requestFrameExtractor.getId(), fileNameS3Bucket);
     }
 
     public RequestFrameExtractorModel findByAccessKeyToModel(String accessKey) {
@@ -100,10 +102,11 @@ public class RequestFrameExtractorService {
     }
 
     @Transactional
-    private void delete(Long requestFrameExtractorId) {
+    private void delete(Long requestFrameExtractorId, String fileNameS3Bucket) {
         try {
             requestFrameExtractorRepository.deleteById(requestFrameExtractorId);
             requestFrameExtractorRepository.flush();
+            bucketService.deleteFile(fileNameS3Bucket);
 
         } catch (EmptyResultDataAccessException e) {
             throw new RequestFrameExtractorNotFindException(String.valueOf(requestFrameExtractorId));

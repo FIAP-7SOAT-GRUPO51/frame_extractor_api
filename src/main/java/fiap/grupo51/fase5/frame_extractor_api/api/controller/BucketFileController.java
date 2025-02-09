@@ -2,8 +2,8 @@ package fiap.grupo51.fase5.frame_extractor_api.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorInput;
-import fiap.grupo51.fase5.frame_extractor_api.api.openapi.BucketFileApi;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUploadInput;
+import fiap.grupo51.fase5.frame_extractor_api.domain.exception.DomainException;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.BucketFileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/bucket")
-public class BucketFileController implements BucketFileApi {
+public class BucketFileController /*implements BucketFileApi*/ {
 
     private final BucketFileService bucketService;
 
@@ -26,13 +25,13 @@ public class BucketFileController implements BucketFileApi {
         this.bucketService = bucketService;
     }
 
-    @GetMapping("/download/{filename}")
-    public ResponseEntity<byte[]> downloadFile(@RequestParam("filename") @PathVariable String filename) {
+    @GetMapping("/downloadFile/{accessKey}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable String accessKey) {
         try {
-            byte[] content = bucketService.downloadFile(filename);
+            byte[] content = bucketService.downloadFile(accessKey);
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + accessKey + "\"")
                     .body(content);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -40,10 +39,9 @@ public class BucketFileController implements BucketFileApi {
         }
     }
 
-    @GetMapping("/list/{filename}")
-    public List<String> listFiles(@PathVariable String filename) {
-        List<String> fileNames = bucketService.listFiles(filename);
-        return ResponseEntity.ok(fileNames).getBody();
+    @GetMapping("/list")
+    public void listFilesFromBucket() {
+        bucketService.listFilesFromBucket();
     }
 
     @PostMapping("/uploadFile")
@@ -52,16 +50,16 @@ public class BucketFileController implements BucketFileApi {
                                              Authentication authentication) {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        RequestFrameExtractorInput requestFrameExtractorInput = null;
+        RequestFrameExtractorUploadInput requestFrameExtractorUploadInput = null;
         try {
-            requestFrameExtractorInput = objectMapper.readValue(jsonParameter, RequestFrameExtractorInput.class);
+            requestFrameExtractorUploadInput = objectMapper.readValue(jsonParameter, RequestFrameExtractorUploadInput.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
         try {
             // Chama o serviço passando os parâmetros necessários
-            String responseMessage = bucketService.uploadFile(file, requestFrameExtractorInput, authentication);
+            String responseMessage = bucketService.uploadFile(file, requestFrameExtractorUploadInput);
 
             // Retorna uma resposta de sucesso
 
@@ -73,14 +71,12 @@ public class BucketFileController implements BucketFileApi {
         }
     }
 
-    @DeleteMapping("/{filename}")
-    public ResponseEntity<String> deleteFile(@RequestParam("filename") @PathVariable String filename) {
+    @DeleteMapping
+    public void deleteFile(@RequestParam("filename") String filename) {
         try {
             bucketService.deleteFile(filename);
-            return ResponseEntity.ok("File deleted successfully: " + filename);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to delete file: " + e.getMessage());
+            throw new DomainException("Failed to delete file: " + e.getMessage());
         }
     }
 }
