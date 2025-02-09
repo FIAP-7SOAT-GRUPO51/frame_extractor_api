@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.ListFilesS3BucketModel;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUploadInput;
 import fiap.grupo51.fase5.frame_extractor_api.domain.components.AWSProperties;
 import fiap.grupo51.fase5.frame_extractor_api.domain.exception.DomainException;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @Slf4j
 @Service
@@ -87,11 +90,13 @@ public class BucketFileService {
 
     }
 
-    public void listFilesFromBucket() {
+    public ListFilesS3BucketModel listFilesFromBucket() {
 
-        s3Client.listObjects(this.awsProperties.getS3BucketName()).getObjectSummaries().forEach(s3ObjectSummary -> {
-            log.info("Arquivo: " + s3ObjectSummary.getKey());
-        });
+        ListFilesS3BucketModel listFilesS3BucketModel = new ListFilesS3BucketModel();
+        listFilesS3BucketModel.setFiles(new ArrayList<>());
+        s3Client.listObjects(this.awsProperties.getS3BucketName()).getObjectSummaries().forEach(s3ObjectSummary -> listFilesS3BucketModel.getFiles().add(s3ObjectSummary.getKey()));
+
+        return listFilesS3BucketModel;
 
     }
 }

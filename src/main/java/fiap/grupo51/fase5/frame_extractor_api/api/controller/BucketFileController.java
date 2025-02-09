@@ -2,6 +2,7 @@ package fiap.grupo51.fase5.frame_extractor_api.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fiap.grupo51.fase5.frame_extractor_api.api.model.ListFilesS3BucketModel;
 import fiap.grupo51.fase5.frame_extractor_api.api.model.input.RequestFrameExtractorUploadInput;
 import fiap.grupo51.fase5.frame_extractor_api.domain.exception.DomainException;
 import fiap.grupo51.fase5.frame_extractor_api.domain.service.BucketFileService;
@@ -40,8 +41,8 @@ public class BucketFileController /*implements BucketFileApi*/ {
     }
 
     @GetMapping("/list")
-    public void listFilesFromBucket() {
-        bucketService.listFilesFromBucket();
+    public ListFilesS3BucketModel listFilesFromBucket() {
+        return bucketService.listFilesFromBucket();
     }
 
     @PostMapping("/uploadFile")
