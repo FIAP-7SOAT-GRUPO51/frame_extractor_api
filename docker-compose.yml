@@ -18,7 +18,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-        
+
   frame-extractor-api:
     image: fiapgrupo51/frame-extractor-api:1.0.0
     build:
@@ -36,8 +36,8 @@ services:
         --spring.jpa.show-sql=${FRAME_EXTRACTOR_API_SPRING_JPA_SHOW_SQL}
     ports:
       - "${FRAME_EXTRACTOR_API_PORT}:8087"
-    volumes:
-      - ${FRAME_EXTRACTOR_API_JWT_PATH}:/app/keys
+    #volumes:
+    #  - ${FRAME_EXTRACTOR_API_JWT_PATH}:/app/keys
     depends_on:
       - frame-extractor-db
     networks:
@@ -48,15 +48,15 @@ services:
         condition: on-failure
 
   frame-extractor-portal:
-    image: fiapgrupo51/frame-extractor-portal:1.0.0
+    image: arterodocker/frame-extractor-portal:1.0.2
     build:
       context: ./../frame_extractor_portal
-      dockerfile: ./Dockerfile
+      dockerfile: ./../frame_extractor_portal/Dockerfile
     container_name: frame-extractor-portal
     ports:
-      - "${FRAME_EXTRACTOR_PORTAL_PORT}:8087"
-    depends_on:
-      - frame-extractor-api
+      - "${FRAME_EXTRACTOR_PORTAL_PORT}:80"
+    #depends_on:
+    #  - frame-extractor-api
     networks:
       - network-frame-extractor
     deploy:

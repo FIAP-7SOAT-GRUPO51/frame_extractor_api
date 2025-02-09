@@ -63,7 +63,7 @@ public class BucketFileService {
             throw new DomainException("Erro ao enviar arquivo para o S3. Client não instanciado.");
         }
         log.info("Enviando arquivo para o S3: " + uniqueFileName);
-        s3Client.putObject(this.awsProperties.getS3BucketName(), uniqueFileName, file.getInputStream(), metadata);
+        s3Client.putObject(this.awsProperties.getS3BucketName(), "upload/" + uniqueFileName, file.getInputStream(), metadata);
 
         log.info("Arquivo enviado com sucesso: " + uniqueFileName);
         return "Arquivo enviado com sucesso: " + uniqueFileName;
@@ -79,14 +79,14 @@ public class BucketFileService {
         String fileNameS3BucketWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
         String fileNameS3Bucket = fileNameS3BucketWithoutExtension + ".zip";
 
-        S3Object s3Object = s3Client.getObject(this.awsProperties.getS3BucketName(), fileNameS3Bucket);
+        S3Object s3Object = s3Client.getObject(this.awsProperties.getS3BucketName(), "processado/" + fileNameS3Bucket);
         return s3Object.getObjectContent().readAllBytes();
     }
 
     public void deleteFile(String fileName) {
 
         // Deleta do S3
-        s3Client.deleteObject(this.awsProperties.getS3BucketName(), fileName);
+        s3Client.deleteObject(this.awsProperties.getS3BucketName(), "upload/" + fileName);
 
     }
 
