@@ -34,9 +34,6 @@ services:
         --spring.datasource.password=${FRAME_EXTRACTOR_API_POSTGRES_PASSWORD}
         --spring.datasource.driverClassName=${FRAME_EXTRACTOR_API_SPRING_DATASOURCE_DRIVER}
         --spring.jpa.show-sql=${FRAME_EXTRACTOR_API_SPRING_JPA_SHOW_SQL}
-        --jwt.key.path=/app/keys
-        --jwt.key.name-private=${FRAME_EXTRACTOR_API_JWT_KEY_NAME_PRIVATE}
-        --jwt.key.name-public=${FRAME_EXTRACTOR_API_JWT_KEY_NAME_PUBLIC}
     ports:
       - "${FRAME_EXTRACTOR_API_PORT}:8087"
     volumes:

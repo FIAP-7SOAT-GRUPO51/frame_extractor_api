@@ -1,8 +1,8 @@
 jwt:
   key:
-    path: ${JWT_KEY_PATH}
-    name-private: ${JWT_KEY_NAME_PRIVATE}
-    name-public: ${JWT_KEY_NAME_PUBLIC}
+    path: classpath
+    name-private: app.key
+    name-public: app.pub
 
 aws:
   accessKeyId: ${AWS_ACCESS_KEY_ID}
