@@ -6,8 +6,9 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import fiap.grupo51.fase5.frame_extractor_api.domain.components.JWKProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -40,16 +41,15 @@ import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
-    @Value("${jwt.key.path}")
-    private String jwtKeyPath;
+    private final JWKProperties jwkProperties;
+    private final String jwtKeyPath = "/app";
 
-    @Value("${jwt.key.name-private}")
-    private String jwtKeyNamePrivate;
-
-    @Value("${jwt.key.name-public}")
-    private String jwtKeyNamePublic;
+    public SecurityConfig(JWKProperties jwkProperties) {
+        this.jwkProperties = jwkProperties;
+    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -82,21 +82,22 @@ public class SecurityConfig {
 
         File publicKeyFile = null;
         try {
-            if (jwtKeyPath.contains("classpath")) {
-                var fileJwtKeyPublic = jwtKeyPath + ":" + jwtKeyNamePublic;
-
-                fileJwtKeyPublic = fileJwtKeyPublic.replace("::", ":");
+            if (this.jwkProperties.getKey().getPath().contains("classpath")) {
+                log.info("jwtKeyPath: " + jwtKeyPath);
+                log.info("jwtKeyNamePrivate: " + this.jwkProperties.getKey().getNamePrivate());
+                log.info("jwtKeyNamePublic: " + this.jwkProperties.getKey().getNamePublic());
+                var fileJwtKeyPublic = jwtKeyPath + "/" + this.jwkProperties.getKey().getNamePublic();
 
                 publicKeyFile = ResourceUtils.getFile(fileJwtKeyPublic);
             }
             else {
-                publicKeyFile = new File(jwtKeyPath + "/" + jwtKeyNamePublic);
+                publicKeyFile = new File(this.jwkProperties.getKey().getPath() + "/" + this.jwkProperties.getKey().getNamePublic());
             }
             String publicKeyContent = FileUtils.readFileToString(publicKeyFile, StandardCharsets.UTF_8);
             RSAPublicKey rsaPublicKey = (RSAPublicKey) PemUtils.readPublicKey(publicKeyContent);
             return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load public key from: " + jwtKeyPath+"/"+jwtKeyNamePublic, e);
+            throw new RuntimeException("Failed to load public key from: " + this.jwkProperties.getKey().getPath()+":"+this.jwkProperties.getKey().getNamePublic(), e);
         }
     }
 
@@ -107,21 +108,17 @@ public class SecurityConfig {
         File privateKeyFile = null;
         try {
 
-            if (jwtKeyPath.contains("classpath")) {
-                //jwtKeyPath = jwtKeyPath.replace("classpath:", "src/main/resources/");
-                var fileJwtKeyPrivate = jwtKeyPath + ":" + jwtKeyNamePrivate;
-                var fileJwtKeyPublic = jwtKeyPath + ":" + jwtKeyNamePublic;
-
-                fileJwtKeyPrivate = fileJwtKeyPrivate.replace("::", ":");
-                fileJwtKeyPublic = fileJwtKeyPublic.replace("::", ":");
+            if (this.jwkProperties.getKey().getPath().contains("classpath")) {
+                var fileJwtKeyPrivate = jwtKeyPath + "/" + this.jwkProperties.getKey().getNamePrivate();
+                var fileJwtKeyPublic = jwtKeyPath + "/" + this.jwkProperties.getKey().getNamePublic();
 
                 publicKeyFile = ResourceUtils.getFile(fileJwtKeyPublic);
                 privateKeyFile = ResourceUtils.getFile(fileJwtKeyPrivate);
 
             }
             else {
-                publicKeyFile = new File(jwtKeyPath + "/" + jwtKeyNamePublic);
-                privateKeyFile = new File(jwtKeyPath + "/" + jwtKeyNamePrivate);
+                publicKeyFile = new File(this.jwkProperties.getKey().getPath() + "/" + this.jwkProperties.getKey().getNamePublic());
+                privateKeyFile = new File(this.jwkProperties.getKey().getPath() + "/" + this.jwkProperties.getKey().getNamePrivate());
             }
 
             String publicKeyContent = FileUtils.readFileToString(publicKeyFile, StandardCharsets.UTF_8);
@@ -140,8 +137,8 @@ public class SecurityConfig {
 
             return new NimbusJwtEncoder(jwkSource);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load keys. Public key path: " + jwtKeyPath+"/"+jwtKeyNamePublic +
-                    ", Private key path: " + jwtKeyPath+"/"+jwtKeyNamePrivate, e);
+            throw new RuntimeException("Failed to load keys. Public key path: " + this.jwkProperties.getKey().getPath()+"/"+this.jwkProperties.getKey().getNamePublic() +
+                    ", Private key path: " + this.jwkProperties.getKey().getPath()+"/"+this.jwkProperties.getKey().getNamePrivate(), e);
         }
     }
 

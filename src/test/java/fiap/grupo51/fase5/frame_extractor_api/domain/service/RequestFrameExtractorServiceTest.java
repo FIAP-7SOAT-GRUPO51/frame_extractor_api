@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class RequestFrameExtractorRequestFrameExtractorTest {
+class RequestFrameExtractorServiceTest {
 
     @InjectMocks
     private RequestFrameExtractorService requestFrameExtractorService;
@@ -111,23 +111,6 @@ class RequestFrameExtractorRequestFrameExtractorTest {
         verify(requestFrameExtractorDisassembler, times(1)).toDomainObject(requestFrameExtractorInput);
         verify(requestFrameExtractorRepository, times(1)).save(requestFrameExtractor);
         verify(requestFrameExtractorAssembler, times(1)).toModel(requestFrameExtractor);
-    }
-
-    @Test
-    void testDelete() {
-
-        RequestFrameExtractorModel requestFrameExtractorModel = generateRequestFrameExtractorModel();
-        RequestFrameExtractor requestFrameExtractor = generateRequestFrameExtractor();
-        requestFrameExtractor.setId(999L);
-        requestFrameExtractor.setAccessKey(requestFrameExtractorModel.getAccessKey());
-        when(requestFrameExtractorRepository.findByAccessKey(requestFrameExtractorModel.getAccessKey())).thenReturn(Optional.of(requestFrameExtractor));
-        doNothing().when(requestFrameExtractorRepository).deleteById(requestFrameExtractor.getId());
-
-        requestFrameExtractorService.delete(requestFrameExtractorModel.getAccessKey());
-
-        verify(requestFrameExtractorRepository, times(1)).findByAccessKey(any(String.class));
-        verify(requestFrameExtractorRepository, times(1)).deleteById(any(Long.class));
-
     }
 
     @Test

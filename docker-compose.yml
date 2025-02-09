@@ -36,8 +36,8 @@ services:
         --spring.jpa.show-sql=${FRAME_EXTRACTOR_API_SPRING_JPA_SHOW_SQL}
     ports:
       - "${FRAME_EXTRACTOR_API_PORT}:8087"
-    volumes:
-      - ${FRAME_EXTRACTOR_API_JWT_PATH}:/app/keys
+    #volumes:
+    #  - ${FRAME_EXTRACTOR_API_JWT_PATH}:/app/keys
     depends_on:
       - frame-extractor-db
     networks:
