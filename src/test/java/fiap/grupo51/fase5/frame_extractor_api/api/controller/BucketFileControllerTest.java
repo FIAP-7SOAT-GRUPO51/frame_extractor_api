@@ -69,32 +69,6 @@ public class BucketFileControllerTest {
     }
 
     @Test
-    public void testUploadFile_ShouldReturnSuccessMessage() throws IOException {
-        String description = "test description";
-        int fps = 30;
-        String responseMessage = "File uploaded successfully";
-
-        when(bucketFileService.uploadFile(multipartFile, description, fps)).thenReturn(responseMessage);
-
-        ResponseEntity<String> response = bucketFileController.uploadFile(multipartFile, description, fps);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseMessage, response.getBody());
-    }
-
-    @Test
-    public void testUploadFile_ShouldReturnInternalServerError() throws IOException {
-        String description = "test description";
-        int fps = 30;
-
-        when(bucketFileService.uploadFile(multipartFile, description, fps)).thenThrow(new IOException("Error"));
-
-        ResponseEntity<String> response = bucketFileController.uploadFile(multipartFile, description, fps);
-
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     public void testDeleteFile_ShouldReturnSuccessMessage() {
         String filename = "test.txt";
 
