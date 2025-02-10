@@ -6,7 +6,7 @@ import fiap.grupo51.fase5.frame_extractor_api.domain.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class    UserService {
 
     private final UserRepository userAppRepository;
 

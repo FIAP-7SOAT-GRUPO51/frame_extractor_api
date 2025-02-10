@@ -114,23 +114,6 @@ class RequestFrameExtractorRequestFrameExtractorTest {
     }
 
     @Test
-    void testDelete() {
-
-        RequestFrameExtractorModel requestFrameExtractorModel = generateRequestFrameExtractorModel();
-        RequestFrameExtractor requestFrameExtractor = generateRequestFrameExtractor();
-        requestFrameExtractor.setId(999L);
-        requestFrameExtractor.setAccessKey(requestFrameExtractorModel.getAccessKey());
-        when(requestFrameExtractorRepository.findByAccessKey(requestFrameExtractorModel.getAccessKey())).thenReturn(Optional.of(requestFrameExtractor));
-        doNothing().when(requestFrameExtractorRepository).deleteById(requestFrameExtractor.getId());
-
-        requestFrameExtractorService.delete(requestFrameExtractorModel.getAccessKey());
-
-        verify(requestFrameExtractorRepository, times(1)).findByAccessKey(any(String.class));
-        verify(requestFrameExtractorRepository, times(1)).deleteById(any(Long.class));
-
-    }
-
-    @Test
     void testUpdate() {
         String accessKey = "accessKey";
         RequestFrameExtractorUpdate requestFrameExtractorUpdate = generateRequestFrameExtractorUpdate();

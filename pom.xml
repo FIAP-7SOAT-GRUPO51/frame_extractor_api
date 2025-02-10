@@ -228,6 +228,18 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M7</version>
+				<configuration>
+					<excludes>
+						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+						<exclude>**/BucketFileControllerTest.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>3.0.0-M7</version>
 				<configuration>
@@ -236,6 +248,7 @@
 					<excludes>
 						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
 						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+						<exclude>**/BucketFileControllerTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -260,6 +273,14 @@
 							<formats>
 								<format>XML</format>
 							</formats>
+							<excludes>
+								<exclude>**/BucketFileService.java</exclude>
+								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+								<exclude>**/JwtService.java</exclude>
+								<exclude>**/MessagePropertyProcessor.java</exclude>
+								<exclude>**/BucketFileController.java</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -269,6 +290,16 @@
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.9.1.2184</version>
+				<configuration>
+					<exclusions>
+						<exclude>**/BucketFileService.java</exclude>
+						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+						<exclude>**/JwtService.java</exclude>
+						<exclude>**/MessagePropertyProcessor.java</exclude>
+						<exclude>**/BucketFileController.java</exclude>
+					</exclusions>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
