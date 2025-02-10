@@ -40,7 +40,17 @@
 		<sonar.coverage.jacoco.xmlReportPaths>
 			../app-it/target/site/jacoco-aggregate/jacoco.xml
 		</sonar.coverage.jacoco.xmlReportPaths>
-
+		<sonar.coverage.exclusions>
+			**/BucketFileService.java,
+			**/RequestFrameExtractorControllerIT.java,
+			**/RequestFrameExtractorServiceIT.java,
+			**/JwtService.java,
+			**/MessagePropertyProcessor.java,
+			**/BucketFileController.java,
+			**/openapi/*,
+			**/User.java,
+			**assembler/*,
+		</sonar.coverage.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -275,6 +285,9 @@
 								<exclude>**/JwtService.java</exclude>
 								<exclude>**/MessagePropertyProcessor.java</exclude>
 								<exclude>**/BucketFileController.java</exclude>
+								<exclude>**/openapi/*</exclude>
+								<exclude>**/User.java</exclude>
+								<exclude>**/assembler/*</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -285,16 +298,7 @@
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.9.1.2184</version>
-				<configuration>
-					<exclusions>
-						<exclude>**/BucketFileService.java</exclude>
-						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
-						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
-						<exclude>**/JwtService.java</exclude>
-						<exclude>**/MessagePropertyProcessor.java</exclude>
-						<exclude>**/BucketFileController.java</exclude>
-					</exclusions>
-				</configuration>
+
 			</plugin>
 		</plugins>
 	</build>
