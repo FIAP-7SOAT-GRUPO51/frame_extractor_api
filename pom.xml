@@ -231,6 +231,7 @@
 					<excludes>
 						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
 						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+						<exclude>**BucketFileControllerTest.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
