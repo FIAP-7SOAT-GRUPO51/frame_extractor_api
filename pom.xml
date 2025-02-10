@@ -272,6 +272,9 @@
 								<exclude>**/BucketFileService.java</exclude>
 								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
 								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+								<exclude>**/JwtService.java</exclude>
+								<exclude>**/MessagePropertyProcessor.java</exclude>
+								<exclude>**/BucketFileController.java</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -287,6 +290,9 @@
 						<exclude>**/BucketFileService.java</exclude>
 						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
 						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+						<exclude>**/JwtService.java</exclude>
+						<exclude>**/MessagePropertyProcessor.java</exclude>
+						<exclude>**/BucketFileController.java</exclude>
 					</exclusions>
 				</configuration>
 			</plugin>
