@@ -41,7 +41,7 @@ public class User {
 	private String accessKey;
 
 	@PrePersist
-	private void prePersist() {
+    protected void prePersist() {
 		generateAccessKey();
 	}
 

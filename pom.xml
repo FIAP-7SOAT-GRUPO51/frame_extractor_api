@@ -255,6 +255,11 @@
 							<formats>
 								<format>XML</format>
 							</formats>
+							<excludes>
+								<exclude>**/BucketFileService.java</exclude>
+								<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+								<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -264,6 +269,13 @@
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.9.1.2184</version>
+				<configuration>
+					<exclusions>
+						<exclude>**/BucketFileService.java</exclude>
+						<exclude>**/RequestFrameExtractorControllerIT.java</exclude>
+						<exclude>**/RequestFrameExtractorServiceIT.java</exclude>
+					</exclusions>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

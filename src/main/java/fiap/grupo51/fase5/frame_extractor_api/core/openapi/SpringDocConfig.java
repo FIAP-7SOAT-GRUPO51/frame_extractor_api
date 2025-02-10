@@ -100,7 +100,7 @@ public class SpringDocConfig {
         };
     }
 
-    private Map<String, Schema> generateSchemas(Components components) {
+    protected Map<String, Schema> generateSchemas(Components components) {
         final Map<String, Schema> schemaMap = new HashMap<>();
 
         Map<String, Schema> problemSchema = ModelConverters.getInstance().read(Problem.class);
@@ -115,7 +115,7 @@ public class SpringDocConfig {
         return components.getSchemas();
     }
 
-    private Map<String, ApiResponse> generateResponses() {
+    protected Map<String, ApiResponse> generateResponses() {
         final Map<String, ApiResponse> apiResponseMap = new HashMap<>();
 
         Content content = new Content()
